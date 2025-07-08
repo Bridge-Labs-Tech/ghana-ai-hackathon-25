@@ -5,7 +5,6 @@ import torch
 import uvicorn
 from PIL import Image
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import JSONResponse
 from transformers import BertTokenizer
 import torchvision.transforms as transforms
 from functools import lru_cache

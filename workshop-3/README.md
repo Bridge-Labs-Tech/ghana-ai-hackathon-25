@@ -74,4 +74,48 @@ curl -X POST http://localhost:8000/reload_model
 
 ---
 
-For more details, watch [Workshop 2 Recording]()
+### 6. Caching System
+
+This API uses an in-memory caching system to speed up repeated predictions and reduce computation:
+
+- **PredictionCache**: Stores up to 100 recent predictions. Each cache entry is keyed by a hash of the image bytes and the input text. If a request with the same image and text is received, the cached result is returned instantly, reducing latency and server load.
+- **Text Preprocessing LRU Cache**: Uses Python's `functools.lru_cache` to cache up to 1000 recent text preprocessing results (tokenization). This speeds up repeated predictions with the same text input.
+
+**How it works:**
+
+- When a prediction request is received, the API computes a hash key from the image and text.
+- If the key exists in the cache, the cached prediction is returned (with `cache_hit: true`).
+- If not, the model runs inference, the result is cached, and then returned (with `cache_hit: false`).
+- The cache automatically evicts the oldest entries when full.
+
+**Note:** This cache is in-memory and will be cleared if the server restarts. For production, consider using a distributed cache (e.g., Redis) for scalability and persistence.
+
+---
+
+### 7. Production Setup Notes
+
+For deploying this API in production, consider the following best practices:
+
+- **Use a Production WSGI/ASGI Server:**
+  - Instead of running with `uvicorn --reload`, use a process manager like [Gunicorn](https://gunicorn.org/) with Uvicorn workers:
+    ```sh
+    gunicorn -k uvicorn.workers.UvicornWorker main:app --workers 4 --bind 0.0.0.0:8000
+    ```
+- **Environment Variables:**
+  - Store secrets and configuration (e.g., model paths, device selection) in environment variables or a `.env` file, not hardcoded in code.
+- **Security:**
+  - Use HTTPS in production (behind a reverse proxy like Nginx or Caddy).
+  - Set up authentication and rate limiting if exposing the API publicly.
+  - Validate and sanitize all inputs.
+- **Scaling:**
+  - For high traffic, run multiple worker processes and/or deploy behind a load balancer.
+  - Use a distributed cache (e.g., Redis) for prediction caching if running multiple instances.
+- **Monitoring:**
+  - Integrate logging, error tracking, and health checks.
+  - Use the `/system_status` and `/health` endpoints for basic monitoring.
+- **Model Reloading:**
+  - Use the `/reload_model` endpoint to reload model weights and class mappings without restarting the server after updates.
+
+For more details, see the [FastAPI deployment documentation](https://fastapi.tiangolo.com/deployment/).
+
+---
