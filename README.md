@@ -1,1 +1,1 @@
-# ghana-ai-hackathon-25
+# Ghana-ai-hackathon-25

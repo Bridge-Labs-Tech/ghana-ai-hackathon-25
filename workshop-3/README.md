@@ -20,7 +20,7 @@ Before running the API, make sure you have the following files in the `workshop-
 - `checkpoints/best_model.pth` — The trained model weights.
 - `class_mapping.json` — A JSON file mapping class names to indices (e.g., `{"pizza": 0, "burger": 1, ...}`).
 
-If you do not have these files, the API will not start. You can train your model and export these files, or obtain them from [class_mapping.json]() and [best_model.pth]().
+If you do not have these files, the API will not start. You can train your model and export these files, or obtain them from [class_mapping.json](https://cdn.bridgelabs.tech/ghana-ai-hackathon/food-classifier/) and [best_model.pth](https://cdn.bridgelabs.tech/ghana-ai-hackathon/food-classifier/best_model.pth). You can also download by running the `update_model.sh` to get the latest files into the right directory.
 
 ### 3. Running the API
 
