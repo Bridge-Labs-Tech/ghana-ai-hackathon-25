@@ -3,3 +3,5 @@ env/
 __pycache__/
 class_mapping*.json
 checkpoints/
+
+dataset/
